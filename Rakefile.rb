@@ -44,7 +44,7 @@ task :images do
 end
 
 task :process_files do
-  Dir["#{TEX_DIR}/*"].each do |filename|
+  Dir["#{TEX_DIR}/*"].sort.each do |filename|
     if filename =~ /\.erb\z/
       puts "Processing #{filename}"
       ERBProcessor.process filename, "tmp/#{File.basename(filename).sub(/\.erb\z/, "")}"

@@ -199,9 +199,7 @@ end.reduce(:+)/sample[1].size
 <%
 	r_xy = (xy_mean - sample[1].mean * sample[2].mean)/(sample[1].S_star * sample[2].S_star)
 	r_xy = roundn(r_xy, 6)
-	f = File.new('data.tmp', 'w')
-	f.puts r_xy.to_s_old
-	f.close
+  DataProvider::Memory.data[:r_xy] = r_xy
 %>
 
 Коэффициент корреляции $ r^{*}_{xy} = <%= r_xy  %> $.

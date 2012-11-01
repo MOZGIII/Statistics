@@ -1,4 +1,4 @@
-<% r_xy = File.new('data.tmp').gets.to_f %>
+<% r_xy = DataProvider::Memory.data[:r_xy] %>
 
 <%
 sample = {}
