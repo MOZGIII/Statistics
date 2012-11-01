@@ -1,8 +1,4 @@
-require 'calc'
-require 'sample'
-
-module Statistic
-  
+module Statistics  
   class Distribution
     attr_reader :sample
 
@@ -42,7 +38,7 @@ module Statistic
       points.pop
       points.shift
 
-      return Statistic::Calc::minimal_square_method(points)
+      return Calc::minimal_square_method(points)
     end
     
     def approx_diff
@@ -77,11 +73,11 @@ module Statistic
     def paper_transform(y) 
       return 3.20 if y > 0.999 
       return -3.20 if y < 0.001 
-      return Statistic::Calc::inv_laplace_function(y-0.5) 
+      return Calc::inv_laplace_function(y-0.5) 
     end 
     
     def paper_inv_transform(x)
-      return Statistic::Calc::laplace_function(x) + 0.5
+      return Calc::laplace_function(x) + 0.5
     end
     
     def parameters(line = linear_approx)
@@ -110,10 +106,10 @@ module Statistic
       points.shift
 
       if fixed_zero_flag || @sample.exponential_distribution?
-        return Statistic::Calc::exponential_linnear_approximation(points)
+        return Calc::exponential_linnear_approximation(points)
       end
 
-      return Statistic::Calc::minimal_square_method(points)
+      return Calc::minimal_square_method(points)
     end
     
     def approx_diff

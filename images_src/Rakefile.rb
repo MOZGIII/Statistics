@@ -1,22 +1,48 @@
-#!/usr/bin/ruby
+#!/usr/bin/env rake
+# coding: utf-8
+Encoding.default_external = "UTF-8"
+Encoding.default_internal = "UTF-8"
 
-require 'yaml'
-require './preprocess.rb'
+$: << "." # fix load paths
 
+require "yaml"
+
+# Hop to upper dir for config
+Dir.chdir ".." do
+  require "erb_processor"
+  require "data_provider"
+  require "latex_helper"
+  require "statistics/calc"
+  require "statistics/sample"
+  require "statistics/distribution"
+
+  # Load data
+  DataProvider.global = YAML.load_file("data/global.yml")
+  DataProvider.data = YAML.load_file("data/#{DataProvider.global["variant"]}.yml")
+  
+  # Extend sandbox with helpers
+  ERBProcessor.add_module DataProvider
+  ERBProcessor.add_module LatexHelper
+  ERBProcessor.add_module Statistics
+end
+
+require 'task10'
 
 # yaml-файл с описанием mp-файлов картинок
 #
 # содержит массив хэшей следующего вида: 
 # {file: <имя_mp_файла>, image_cnt: <кол-во_изображений>, dependences: [<файл1>, <файл2>, ...]}
 #   
-#  Например файл <make.lst.yaml> :
+#  Например файл <make.lst.yml> :
 #  >  ---
 #  >    - {file: "sorternet", image_cnt: 23, dependences: ["sndefs.mp"]}
 #  >    - {file: "funcelem",  image_cnt: 2,  dependences: ["funcelemdefs.mp"]}
 #  >
-IMAGE_LIST_YAML = 'make.lst.yaml'
+IMAGE_LIST_YAML = 'make.lst.yml'
+
 # имя временного файла для создания иллюстаций
 TMP_FILE = 'tmp'
+
 # файл latex заголовка, в нем указаны используемые пакеты
 #   Например файл <preheader.tex> :
 #   >  \documentclass[12pt]{amsart}
@@ -25,13 +51,13 @@ TMP_FILE = 'tmp'
 #   >  \endinput
 #   >
 PREHEADER = 'preheader'
-# папка куда будут складываться сгенерированные картинки
-DEST_FOLDER = '../images'
 
-  
+# папка куда будут складываться сгенерированные картинки
+DEST_FOLDER = '../tmp/images'
+
 # программы
-LATEX = 'latex'
-MPOST = 'mpost -tex=latex'
+LATEX = 'latex -interaction=nonstopmode'
+MPOST = 'mpost -interaction=nonstopmode --tex=latex'
 DVIPS = 'dvips'
 
 task :default do 
@@ -48,21 +74,21 @@ rule( Regexp.new("^#{Regexp.escape(DEST_FOLDER)}/[\\w\\.]+\\.eps$") =>
 end
 
 rule '.mp' => '.mp.erb' do |t|
-  process_erb(t.source, t.name)
+  ERBProcessor.process(t.source, t.name)
 end
 
 rule( /^[^\/]+\.eps$/ => [lambda{ |task_name| task_name.sub(/\.eps$/, "") }]) do |t|
-  file = File.new("#{TMP_FILE}.tex", "w")
-  file.puts(%{
-    \\input{#{PREHEADER}}
-    \\DeclareGraphicsRule{*}{eps}{*}{}
-    \\nofiles
-    \\begin{document}
-    \\thispagestyle{empty}
-    \\includegraphics{#{t.source}}
-    \\end{document}
-  })
-  file.close
+  File.open("#{TMP_FILE}.tex", "w") do |file|
+    file << (%{
+      \\input{#{PREHEADER}}
+      \\DeclareGraphicsRule{*}{eps}{*}{}
+      \\nofiles
+      \\begin{document}
+      \\thispagestyle{empty}
+      \\includegraphics{#{t.source}}
+      \\end{document}
+    })
+  end
 
   sh "#{LATEX} #{TMP_FILE}"
   sh "#{DVIPS} -E -o #{t.name} #{TMP_FILE}"
@@ -70,12 +96,20 @@ rule( /^[^\/]+\.eps$/ => [lambda{ |task_name| task_name.sub(/\.eps$/, "") }]) do
 end
 
 task :clean do
-  rm Dir["mpx*"]
-  rm Dir["*~"]
-  rm Dir["*.log"]
-  rm Dir["*.mpx"]
-  rm Dir["*.mp"]
-  rm Dir["#{TMP_FILE}.*"]
+  masks = %w{
+    mpx*
+    *~
+    *.log
+    *.mpx
+    *.mp
+  }
+  files = masks.map{ |mask| Dir[mask] }.flatten
+  rm files unless files.empty?
+
+  Dir["#{TMP_FILE}.*"].tap { |f| rm f unless f.empty?}
+  
+  rm_rf DEST_FOLDER if File.exists?(DEST_FOLDER)
+  mkdir DEST_FOLDER
 end
 
 directory DEST_FOLDER
@@ -104,11 +138,15 @@ MPTASKS.each do |mptask|
 end
 
 task :gnuplot do
-  require './task10.rb'
+  file_names = ["money", "cor2", "cor_norm"]
+
+  Task10.data_graph(DataProvider.data[8]['data'], file_names[0])
+  Task10.data_cor(DataProvider.data[8]['data'], file_names[1], file_names[2])
+
   sh "gnuplot *.gnu"
 end
 
-task :all => [:gnuplot] + MPTASKS.map{ |mptask| mptask['file'] }
+task :all => [:veryclean, :gnuplot] + MPTASKS.map{ |mptask| mptask['file'] }
 
 task :veryclean => :clean do
   files = []
@@ -117,5 +155,6 @@ task :veryclean => :clean do
       files << "#{mptask['file']}.#{i}" 
     end
   end
-  rm Dir[*files]
+  
+  Dir[*files].tap { |f| rm f unless f.empty? }
 end

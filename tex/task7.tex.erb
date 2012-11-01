@@ -1,17 +1,7 @@
-
-<% require 'yaml' %>
-
-<% global = YAML.load_file("data/global.yaml") %>
-<% data = YAML.load_file("data/#{global['variant']}.yaml") %>
-
-<% require './statistic.rb' %>
-<% require './latex_helper.rb' %>
-<% include LatexHelper %>
-
 <%
 sample = {}
 for i in 1 .. 4
-  sample[i] = Statistic::Sample::new(data[i]['data'])
+  sample[i] = Statistics::Sample::new(data[i]['data'])
   sample[i].hist_step = data[i]['histstep'] if data[i]['histstep']
   sample[i].hist_start  = data[i]['histstart'] if data[i]['histstart']
 end
@@ -78,8 +68,8 @@ m1n = roundn(m1.to_f/n, 6)
 m2n = roundn(m2.to_f/n, 6)
 u1 = roundn((m1n - p)/Math::sqrt(p*q)*Math::sqrt(n), 6)
 u2 = roundn((m2n - p)/Math::sqrt(p*q)*Math::sqrt(n), 6)
-z1 = roundn(Statistic::Calc::inv_laplace_function(0.95 - 0.5), 6)
-z2 = roundn(Statistic::Calc::inv_laplace_function(0.9 - 0.5), 6)
+z1 = roundn(Statistics::Calc::inv_laplace_function(0.95 - 0.5), 6)
+z2 = roundn(Statistics::Calc::inv_laplace_function(0.9 - 0.5), 6)
 %>
 
 Пусть $А$~--- событие, состоящее в том, что выборочное значение превосходит $5$. Для каждой выборки 

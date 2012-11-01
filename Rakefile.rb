@@ -1,65 +1,92 @@
+#!/usr/bin/env rake
+# coding: utf-8
+Encoding.default_external = "UTF-8"
+Encoding.default_internal = "UTF-8"
 
-require 'yaml'
-require './preprocess.rb'
+$: << "." # fix load paths
 
-TEXT_EDITOR = 'scite'
-MAIN = 'main.tex'
-RESULT = 'term_paper.pdf'
-GLOBAL_DATA = 'data/global.yaml'
-USER_DATA = "data/#{YAML.load_file(GLOBAL_DATA)['variant']}.yaml";
+require "yaml"
+require "erb_processor"
+require "data_provider"
+require "latex_helper"
+require "statistics/calc"
+require "statistics/sample"
+require "statistics/distribution"
 
-MAIN_INPUTS = File.new(MAIN).readlines.join.scan(/^\\input\{\w+\}/).map do |name|
-  name.sub(/\\input\{/, "").chop + ".tex" 
-end
+ROOT_DIR = File.dirname(__FILE__)
+# TEX_DIR = ROOT_DIR + "/tex"
+TEX_DIR = "tex"
 
-rule '.tex' => ['.tex.erb'] do |t|
-  process_erb(t.source, t.name)
-end
+MAIN = "main.tex"
+RESULT = "term_paper.pdf"
+
+# Load data
+DataProvider.global = YAML.load_file("data/global.yml")
+DataProvider.data = YAML.load_file("data/#{DataProvider.global["variant"]}.yml")
+
+# Extend sandbox with helpers
+ERBProcessor.add_module DataProvider
+ERBProcessor.add_module LatexHelper
+ERBProcessor.add_module Statistics
 
 task :default => [:termpaper]
 
 task :help do
   puts "If you want build term paper, type: rake termpaper"
-  puts "If you want change term paper info, type: rake setinfo"
   puts "If you want look at this help, type: rake help"
 end
 
 task :images do
-  Dir.chdir("images_src")
-  sh "rake all"
-  sh "rake veryclean"
-  Dir.chdir("..")
-end
-
-task :termpaper => [:clean] + MAIN_INPUTS + [:images, GLOBAL_DATA, USER_DATA] do
-  3.times do
-    sh "latex #{MAIN}"
+  Dir.chdir("images_src") do
+    sh "rake all"
+    sh "rake veryclean"
   end
-  sh "dvips -o main.ps main.dvi"
-  sh "ps2pdf main.ps"
 end
 
-task :setinfo do
-  sh "#{TEXT_EDITOR} data/global.yaml"
+task :process_files do
+  Dir["#{TEX_DIR}/*"].each do |filename|
+    if filename =~ /\.erb\z/
+      puts "Processing #{filename}"
+      ERBProcessor.process filename, "tmp/#{File.basename(filename).sub(/\.erb\z/, "")}"
+    else
+      cp filename, "tmp"
+    end
+  end
+end
+
+task :termpaper => [:clean, :process_files, :images] do
+  Dir.chdir "tmp" do
+    3.times do
+      sh "pdflatex #{MAIN}"
+    end
+  end
+  mv "tmp/#{MAIN.basename("pdf")}", RESULT
 end
 
 task :clean do
-  rm Dir["*~"]
-  rm Dir["*.log"]
-  rm Dir["*.aux"]
-  rm Dir["*.toc"]
-  rm Dir["*.out"]
-  rm Dir["*.pdf"]
-  rm Dir["*.ps"]
-  rm Dir["*.dvi"]
-  rm Dir["*.tmp"]
-  rm Dir["images/*.eps"]
-  rm Dir["images/*.dat"]
-  rm Dir["images/*.gnu"]
+  masks = %w{
+    *~
+    *.log
+    *.aux
+    *.toc
+    *.out
+    *.pdf
+    *.ps
+    *.dvi
+    *.tmp
+    images/*.eps
+    images/*.dat
+    images/*.gnu
+  }
+  files = masks.map{ |mask| Dir[mask] }.flatten
+  rm files unless files.empty?
 
   all_files = Dir["*"]
   all_files.each do |file|
     rm file if all_files.include?("#{file}.erb")
   end
+  
+  rm_rf "tmp"
+  mkdir "tmp"
 end
 

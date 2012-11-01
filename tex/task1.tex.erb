@@ -1,16 +1,7 @@
-<% require 'yaml' %>
-
-<% global = YAML.load_file("data/global.yaml") %>
-<% data = YAML.load_file("data/#{global['variant']}.yaml") %>
-
-<% require './statistic.rb' %>
-<% require './latex_helper.rb' %>
-<% include LatexHelper %>
-
 <%
 sample = {}
 for i in 1 .. 4
-  sample[i] = Statistic::Sample::new(data[i]['data'])
+  sample[i] = Statistics::Sample::new(data[i]['data'])
   sample[i].hist_step = data[i]['histstep'] if data[i]['histstep']
   sample[i].hist_start  = data[i]['histstart'] if data[i]['histstart']
 end
@@ -18,8 +9,8 @@ end
 
 <%
 def dist_name(dist)
-  return "равномерном"      if dist.kind_of?(Statistic::Uniform)
-  return "экспоненциальном" if dist.kind_of?(Statistic::Exponential)
+  return "равномерном"      if dist.kind_of?(Statistics::Uniform)
+  return "экспоненциальном" if dist.kind_of?(Statistics::Exponential)
   return "нормальном"
 end
 %>
@@ -398,7 +389,7 @@ $$
 <% parameters = [] %>
 
 \par
-<% if dist1.kind_of?(Statistic::Uniform) %>
+<% if dist1.kind_of?(Statistics::Uniform) %>
   <% k, b = dist1.linear_approx %>
   <% param = dist1.parameters %>
   <% parameters[1] = "$\\sigma = #{roundn(param[:sigma], 4)}$ и 
@@ -411,7 +402,7 @@ $$
   Откуда $\sigma = \dfrac{1}{2\sqrt{3}k} \approx 
   <%= roundn(param[:sigma], 4) %>$ и 
   $m = \dfrac{1 - 2b}{2k} \approx <%= roundn(param[:m], 4) %>$.
-<% elsif dist1.kind_of?(Statistic::Normal) %>
+<% elsif dist1.kind_of?(Statistics::Normal) %>
   <% k, b = dist1.linear_approx %>
   <% param = dist1.parameters %>
   <% parameters[1] = "$\\sigma = #{roundn(param[:sigma], 4)}$ и 
@@ -443,7 +434,7 @@ $$
 <% end %>
 
 \par
-<% if dist2.kind_of?(Statistic::Uniform) %>
+<% if dist2.kind_of?(Statistics::Uniform) %>
   <% k, b = dist2.linear_approx %>
   <% param = dist2.parameters %>
   <% parameters[2] = "$\\sigma = #{roundn(param[:sigma], 4)}$ и 
@@ -457,7 +448,7 @@ $$
   <%= roundn(param[:sigma], 4) %>$ и 
   $m = \dfrac{1 - 2b}{2k} \approx <%= roundn(param[:m], 4) %>$.
 
-<% elsif dist2.kind_of?(Statistic::Normal) %>
+<% elsif dist2.kind_of?(Statistics::Normal) %>
   <% k, b = dist2.linear_approx %>
   <% param = dist2.parameters %>
   <% parameters[2] = "$\\sigma = #{roundn(param[:sigma], 4)}$ и 

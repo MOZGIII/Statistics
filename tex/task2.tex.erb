@@ -1,16 +1,7 @@
-<% require 'yaml' %>
-
-<% global = YAML.load_file("data/global.yaml") %>
-<% data = YAML.load_file("data/#{global['variant']}.yaml") %>
-
-<% require './statistic.rb' %>
-<% require './latex_helper.rb' %>
-<% include LatexHelper %>
-
 <%
 sample = {}
 for i in 1 .. 4
-  sample[i] = Statistic::Sample::new(data[i]['data'])
+  sample[i] = Statistics::Sample::new(data[i]['data'])
   sample[i].hist_step = data[i]['histstep'] if data[i]['histstep']
   sample[i].hist_start  = data[i]['histstart'] if data[i]['histstart']
 end
@@ -119,7 +110,7 @@ $\chi^2_{\text{набл}} = \sum\limits_{j=1}^s {\frac{(m_j - m_j^{\prime})^2}{m
 %% надо бы переписать на partials :)
 
 <% dist =  sample[1].distribution %>
-<% if dist.kind_of?(Statistic::Uniform) %>
+<% if dist.kind_of?(Statistics::Uniform) %>
   <% min = sample[1].data.min %>
   <% max = sample[1].data.max %>
   <% type1 ='равномерном'%>
@@ -155,7 +146,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistic::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{,}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 2 - 1 = <%= hist.size - 3 %> $, 
@@ -170,7 +161,7 @@ Cоставим таблицу эмпирических и теоритичес�
 нет оснований отвергнуть гипотезу $ H_0 $ с уровнем значимости $ \alpha = 0{,}1$.
  <% answer1 = 'нет оснований отвергнуть' %>
   <% end %>
-<% elsif dist.kind_of?(Statistic::Normal) %>
+<% elsif dist.kind_of?(Statistics::Normal) %>
   <% med = roundn(sample[1].mean, 4) %>
   <% sigma = roundn(sample[1].S_star, 4) %>
   <% type1 ='нормальном'%>
@@ -192,8 +183,8 @@ Cоставим таблицу эмпирических и теоритичес�
       <% hist = sample[1].frequencies %>
       <% hist.to_a.sort.each do |x, f| %> 
         $[<%= roundn(x, 4) %>; <%= roundn(x+step, 4) %>)$ & $<%= roundn(f*size, 4) %>$ & $<%= 
-        roundn((Statistic::Calc::laplace_function((x + step - med)/sigma) - 
-        Statistic::Calc::laplace_function((x - med)/sigma)) * size, 4) %>$\\
+        roundn((Statistics::Calc::laplace_function((x + step - med)/sigma) - 
+        Statistics::Calc::laplace_function((x - med)/sigma)) * size, 4) %>$\\
         \hline
       <% end %>
     \end{tabular}
@@ -201,13 +192,13 @@ Cоставим таблицу эмпирических и теоритичес�
 \end{table}
 
 <% chi = hist.to_a.inject(0) do |sum, e|
-     mjt = (Statistic::Calc::laplace_function((e[0] + step - med)/sigma) - Statistic::Calc::laplace_function((e[0] - med)/sigma)) * size
+     mjt = (Statistics::Calc::laplace_function((e[0] + step - med)/sigma) - Statistics::Calc::laplace_function((e[0] - med)/sigma)) * size
      d = e[1] * size - mjt
      sum + d*d/mjt
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistic::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{,}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 3 - 1 = <%= hist.size - 3 %> $, 
@@ -258,7 +249,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistic::Calc::inv_chi_square(0.9, hist.size - 2), 4) %>
+<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 2), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{,}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 1 - 1 = <%= hist.size - 2 %> $, 
@@ -278,7 +269,7 @@ Cоставим таблицу эмпирических и теоритичес�
 %% вторая выборка
 
 <% dist =  sample[2].distribution %>
-<% if dist.kind_of?(Statistic::Uniform) %>
+<% if dist.kind_of?(Statistics::Uniform) %>
   <% min = sample[2].data.min %>
   <% max = sample[2].data.max %>
 Для выборки 2 была выдвинута гипотеза $H_0$ о равномерном распределении.
@@ -313,7 +304,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistic::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{,}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 2 - 1 = <%= hist.size - 3 %> $, 
@@ -328,7 +319,7 @@ Cоставим таблицу эмпирических и теоритичес�
 нет оснований отвергнуть гипотезу $ H_0 $ с уровнем значимости $ \alpha = 0{,}1$.
  <% answer2 = 'нет оснований отвергнуть' %>
  <% end %>
-<% elsif dist.kind_of?(Statistic::Normal) %>
+<% elsif dist.kind_of?(Statistics::Normal) %>
   <% med = roundn(sample[2].mean, 4) %>
   <% sigma = roundn(sample[2].S_star, 4) %>
 Проверим гипотезу $ H_0 $ о нормальном распределении выборки 2.
@@ -349,8 +340,8 @@ Cоставим таблицу эмпирических и теоритичес�
       <% hist = sample[2].frequencies %>
       <% hist.to_a.sort.each do |x, f| %> 
         $[<%= x %>; <%= x + step %>)$ & $<%= f * size %>$ & $<%= 
-        roundn((Statistic::Calc::laplace_function((x + step - med)/sigma) - 
-        Statistic::Calc::laplace_function((x - med)/sigma)) * size, 4) %>$\\
+        roundn((Statistics::Calc::laplace_function((x + step - med)/sigma) - 
+        Statistics::Calc::laplace_function((x - med)/sigma)) * size, 4) %>$\\
         \hline
       <% end %>
     \end{tabular}
@@ -358,13 +349,13 @@ Cоставим таблицу эмпирических и теоритичес�
 \end{table}
 
 <% chi = hist.to_a.inject(0) do |sum, e|
-     mjt = (Statistic::Calc::laplace_function((e[0] + step - med)/sigma) - Statistic::Calc::laplace_function((e[0] - med)/sigma)) * size
+     mjt = (Statistics::Calc::laplace_function((e[0] + step - med)/sigma) - Statistics::Calc::laplace_function((e[0] - med)/sigma)) * size
      d = e[1] * size - mjt
      sum + d*d/mjt
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistic::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{,}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 3 - 1 = <%= hist.size - 3 %> $, 
@@ -412,7 +403,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistic::Calc::inv_chi_square(0.9, hist.size - 2), 4) %>
+<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 2), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{,}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 1 - 1 = <%= hist.size - 2 %> $, 

@@ -1,5 +1,4 @@
-
-module Statistic
+module Statistics
   module Calc
     def laplace_function(x)
       return 0.5*Math.erf(x/Math.sqrt(2))

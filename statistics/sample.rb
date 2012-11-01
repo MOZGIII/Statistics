@@ -1,7 +1,4 @@
-require 'calc'
-require 'distribution'
-
-module Statistic
+module Statistics
   class Sample
     attr_reader :data
     attr_accessor :hist_step, :hist_start
@@ -94,9 +91,9 @@ module Statistic
     end
 
     def distribution
-      types = [ Statistic::Uniform::new(self), 
-                Statistic::Normal::new(self), 
-                Statistic::Exponential::new(self) ]
+      types = [ Uniform::new(self), 
+                Normal::new(self), 
+                Exponential::new(self) ]
       diff = types.map { |dist| dist.approx_diff }
       types[diff.index(diff.min)]
     end

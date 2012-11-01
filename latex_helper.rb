@@ -1,4 +1,3 @@
-
 module LatexHelper
   def number_in_text(num)
     #"#{(num < 0 ? 'минус' : '')} $#{num.abs.to_s}$"

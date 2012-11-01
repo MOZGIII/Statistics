@@ -1,20 +1,14 @@
 input graph;
 
-verbatimtex \input{preheader} 
+verbatimtex
+\input{preheader} 
 \begin{document}
 etex;
-
-<% require 'yaml' %>
-
-<% global = YAML.load_file("../data/global.yaml") %>
-<% data = YAML.load_file("../data/#{global['variant']}.yaml") %>
-
-<% require '../statistic' %>
  
 <%
 sample = {}
 for i in 1 .. 4
-  sample[i] = Statistic::Sample::new(data[i]['data'])
+  sample[i] = Statistics::Sample::new(data[i]['data'])
   sample[i].hist_step = data[i]['histstep'] if data[i]['histstep']
   sample[i].hist_start  = data[i]['histstart'] if data[i]['histstart']
 end
@@ -137,7 +131,7 @@ beginfig (5) ;
   draw begingraph (12cm, 3.5cm);
     <% fdata = data[1]['data'].dup.sort %>
     <% xoffset = (fdata.last - fdata.first)*0.04 %>
-    <% _normal = Statistic::Normal.new(sample[1]) %>
+    <% _normal = Statistics::Normal.new(sample[1]) %>
     <% i = 0.0 %> 
     path r;
     
@@ -166,7 +160,7 @@ beginfig (6) ;
   draw begingraph (12cm, 3.5cm);
     <% fdata = data[1]['data'].dup.sort %>
     <% xoffset = (fdata.last - fdata.first)*0.04 %>
-    <% _exponential = Statistic::Exponential.new(sample[1]) %>
+    <% _exponential = Statistics::Exponential.new(sample[1]) %>
     <% i = 0.0 %> 
     path r;
     
@@ -195,7 +189,7 @@ beginfig (7) ;
   draw begingraph (12cm, 3.5cm);
     <% fdata = data[1]['data'].dup.sort %>
     <% xoffset = (fdata.last - fdata.first)*0.04 %>
-    <% _uniform = Statistic::Uniform.new(sample[1]) %>
+    <% _uniform = Statistics::Uniform.new(sample[1]) %>
     <% i = 0.0 %> 
     path r;
     
@@ -224,7 +218,7 @@ beginfig (8) ;
   draw begingraph (12cm, 3.5cm);
     <% fdata = data[2]['data'].dup.sort %>
     <% xoffset = (fdata.last - fdata.first)*0.04 %>
-    <% _normal = Statistic::Normal.new(sample[2]) %>
+    <% _normal = Statistics::Normal.new(sample[2]) %>
     <% i = 0.0 %> 
     path r;
     
@@ -253,7 +247,7 @@ beginfig (9) ;
   draw begingraph (12cm, 3.5cm);
     <% fdata = data[2]['data'].dup.sort %>
     <% xoffset = (fdata.last - fdata.first)*0.04 %>
-    <% _exponential = Statistic::Exponential.new(sample[2]) %>
+    <% _exponential = Statistics::Exponential.new(sample[2]) %>
     <% i = 0.0 %> 
     path r;
     
@@ -282,7 +276,7 @@ beginfig (10) ;
   draw begingraph (12cm, 3.5cm);
     <% fdata = data[2]['data'].dup.sort %>
     <% xoffset = (fdata.last - fdata.first)*0.04 %>
-    <% _uniform = Statistic::Uniform.new(sample[2]) %>
+    <% _uniform = Statistics::Uniform.new(sample[2]) %>
     <% i = 0.0 %> 
     path r;
     

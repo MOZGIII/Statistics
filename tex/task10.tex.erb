@@ -1,17 +1,7 @@
-
-<% require 'yaml' %>
-
-<% global = YAML.load_file("data/global.yaml") %>
-<% data = YAML.load_file("data/#{global['variant']}.yaml") %>
-
-<% require './statistic.rb' %>
-<% require './latex_helper.rb' %>
-<% include LatexHelper %>
-
 <%
 sample = {}
 for i in 8 .. 8
-  sample[i] = Statistic::Sample::new(data[i]['data'])
+  sample[i] = Statistics::Sample::new(data[i]['data'])
   sample[i].hist_step = data[i]['histstep'] if data[i]['histstep']
   sample[i].hist_start  = data[i]['histstart'] if data[i]['histstart']
 end
