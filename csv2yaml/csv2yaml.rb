@@ -12,7 +12,7 @@ table_interval = 2
 data = File.open(DATAFILE).readlines.map{|line| line.split(";").map{|x| x.sub(",", ".").to_f}}
 
 for v in 1..NVARIANTS
-	f = File.open(PATH+"#{v}.yaml", "w")
+	f = File.open(PATH+"#{v}.yml", "w")
 	f.puts "---"
 	#task 1
 	position = table_interval
