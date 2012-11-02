@@ -1,4 +1,6 @@
 <%
+raise "No data found! Read the task and fill in the data! Sooo lazy..." unless data[8]
+
 sample = {}
 for i in 8 .. 8
   sample[i] = Statistics::Sample::new(data[i]['data'])
@@ -79,7 +81,7 @@ $$
 Построим график расходов по дням, откладывая на оси абсцисс номер дня, а по оси ординат – расход рублях, приведенный на рис.~\ref{pic:13}.
 
 \begin{figure}[h]
-  \includegraphics[scale=1]{images/money.eps}
+  \includegraphics[scale=1]{images/money}
   \caption{График расходов по дням.}\label{pic:13}
 \end{figure}
 
@@ -120,7 +122,7 @@ cor = cor.map {|val| roundn(val, 2)}
 приведенный на рис.~\ref{pic:14}.
 
 \begin{figure}[h]
-  \includegraphics[scale=1]{images/cor2.eps}
+  \includegraphics[scale=1]{images/cor2}
   \caption{График корреляционной функции.}\label{pic:14}
 \end{figure}
 
@@ -150,7 +152,7 @@ $$\widehat{\rho}(\tau) = \frac{\widehat{k}(\tau)}{\widehat{k}(0)}.$$
 для данного случайного процесса представлен на рис.~\ref{pic:15}.
 
 \begin{figure}[h]
-  \includegraphics[scale=1]{images/cor_norm.eps}
+  \includegraphics[scale=1]{images/cor_norm}
   \caption{График нормированной корреляционной функции.}\label{pic:15}
 \end{figure}
 

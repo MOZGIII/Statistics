@@ -41,7 +41,7 @@ require 'task10'
 IMAGE_LIST_YAML = 'make.lst.yml'
 
 # имя временного файла для создания иллюстаций
-TMP_FILE = 'tmp'
+TMP_FILE = 'st'
 
 # файл latex заголовка, в нем указаны используемые пакеты
 #   Например файл <preheader.tex> :
@@ -59,40 +59,11 @@ DEST_FOLDER = '../tmp/images'
 LATEX = 'latex -interaction=nonstopmode'
 MPOST = 'mpost -interaction=nonstopmode --tex=latex'
 DVIPS = 'dvips'
+EPSTOOL = 'epstool'
 
 task :default do 
   puts "Run: rake { all | <mpfile> }"
   puts "Available tasks: all, clean, veryclean"
-end
-
-rule( Regexp.new("^#{Regexp.escape(DEST_FOLDER)}/[\\w\\.]+\\.eps$") => 
-      [lambda{ |task_name| task_name.sub("#{DEST_FOLDER}/", "") }] ) do |t|
-  puts "rule #{t.name}" 
-  #result_name = t.name.dup
-  #result_name[result_name =~ /\.\d+/] = '_'
-  sh "mv #{t.source} #{t.name}"
-end
-
-rule '.mp' => '.mp.erb' do |t|
-  ERBProcessor.process(t.source, t.name)
-end
-
-rule( /^[^\/]+\.eps$/ => [lambda{ |task_name| task_name.sub(/\.eps$/, "") }]) do |t|
-  File.open("#{TMP_FILE}.tex", "w") do |file|
-    file << (%{
-      \\input{#{PREHEADER}}
-      \\DeclareGraphicsRule{*}{eps}{*}{}
-      \\nofiles
-      \\begin{document}
-      \\thispagestyle{empty}
-      \\includegraphics{#{t.source}}
-      \\end{document}
-    })
-  end
-
-  sh "#{LATEX} #{TMP_FILE}"
-  sh "#{DVIPS} -E -o #{t.name} #{TMP_FILE}"
-  rm Dir["#{TMP_FILE}.*"]
 end
 
 task :clean do
@@ -102,39 +73,56 @@ task :clean do
     *.log
     *.mpx
     *.mp
+    *.dat
+    *.gnu
   }
   files = masks.map{ |mask| Dir[mask] }.flatten
   rm files unless files.empty?
 
-  Dir["#{TMP_FILE}.*"].tap { |f| rm f unless f.empty?}
-  
+  # Dir["#{TMP_FILE}.*"].tap { |f| rm f unless f.empty?}
+end
+
+task :init_dirs do
   rm_rf DEST_FOLDER if File.exists?(DEST_FOLDER)
   mkdir DEST_FOLDER
 end
 
-directory DEST_FOLDER
-
 MPTASKS = YAML.load_file(IMAGE_LIST_YAML)
 
-# Зависимости для mpost-картинок.
-# По одной для каждого числа из beginfig
+task :metapost do
+  MPTASKS.each do |mptask|
+    ERBProcessor.process("#{mptask['file']}.mp.erb", "#{mptask['file']}.mp") if File.exists?("#{mptask['file']}.mp.erb")
+  
+    sh "#{MPOST} #{mptask['file']}.mp"
+    (1 .. mptask['image_cnt']).each do |i|
+      filename = "#{mptask['file']}-#{i}"
+      
+      File.open("#{filename}.tex", "w") do |file|
+      # \\DeclareGraphicsRule{*}{eps}{*}{}
+        file << (%{
+          \\input{#{PREHEADER}}
+          \\nofiles
+          \\begin{document}
+          \\thispagestyle{empty}
+          \\includegraphics{#{filename}.mps}
+          \\end{document}
+        })
+      end
+      
+      sh "#{LATEX} #{filename}"
+      sh "#{DVIPS} -o #{filename}.ps #{filename}"
+      sh "ps2eps --ignoreBB #{filename}.ps"
 
-MPTASKS.each do |mptask|
-  for i in 1 .. mptask['image_cnt']
-    file( "#{mptask['file']}.#{i}" => (mptask['dependences'] << DEST_FOLDER << "#{mptask['file']}.mp" << "#{PREHEADER}.tex")) do
-      sh "#{MPOST} #{mptask['file']}.mp"
+=begin
+      sh "pdfcrop #{filename}.pdf"
+      sh "pdftops -f 1 -l 1 -eps #{filename}-crop.pdf" 
+      rm "#{filename}-crop.pdf"
+      sh "mv #{filename}-crop.eps #{filename}.eps"
+=end
+      sh "mv #{filename}.eps #{DEST_FOLDER}"
+
     end
   end
-end
-
-MPTASKS.each do |mptask|
-  depend = (1 .. mptask['image_cnt']).map do |i| 
-    "#{DEST_FOLDER}/#{mptask['file']}.#{i}.eps" 
-  end
-  if mptask['erb']
-    depend << "#{mptask['file']}.mp.erb"
-  end 
-  task mptask['file'] => depend 
 end
 
 task :gnuplot do
@@ -146,14 +134,16 @@ task :gnuplot do
   sh "gnuplot *.gnu"
 end
 
-task :all => [:veryclean, :gnuplot] + MPTASKS.map{ |mptask| mptask['file'] }
+task :all => [:init_dirs, :gnuplot, :metapost]
 
-task :veryclean => :clean do
+task :veryclean => [:clean] do
   files = []
-  MPTASKS.each do |mptask| 
+  MPTASKS.each do |mptask|
+    files += Dir["#{mptask['file']}.*"]
     (1 .. mptask['image_cnt']).each do |i| 
-      files << "#{mptask['file']}.#{i}" 
+      files += Dir["#{mptask['file']}-#{i}.*"]
     end
+    files -= ["#{mptask['file']}.mp.erb"]
   end
   
   Dir[*files].tap { |f| rm f unless f.empty? }
