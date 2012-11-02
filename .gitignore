@@ -60,3 +60,6 @@ Session.vim
 *.vrb
 *.xdy
 *.tdo
+
+# Current Project
+/term_paper.pdf
