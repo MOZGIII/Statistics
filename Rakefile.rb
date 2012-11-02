@@ -13,11 +13,7 @@ require "statistics/calc"
 require "statistics/sample"
 require "statistics/distribution"
 
-ROOT_DIR = File.dirname(__FILE__)
-# TEX_DIR = ROOT_DIR + "/tex"
 TEX_DIR = "tex"
-
-MAIN = "main.tex"
 RESULT = "term_paper.pdf"
 
 # Load data
@@ -38,6 +34,7 @@ end
 
 task :images do
   Dir.chdir("images_src") do
+    sh "rake veryclean"
     sh "rake all"
     sh "rake veryclean"
   end
@@ -57,10 +54,12 @@ end
 task :termpaper => [:clean, :process_files, :images] do
   Dir.chdir "tmp" do
     3.times do
-      sh "pdflatex #{MAIN}"
+      sh "latex main.tex"
     end
+    sh "dvips -o main.ps main.dvi"
+    sh "ps2pdf main.ps"
   end
-  mv "tmp/#{MAIN.basename("pdf")}", RESULT
+  mv "tmp/main.pdf", RESULT
 end
 
 task :clean do
@@ -74,9 +73,6 @@ task :clean do
     *.ps
     *.dvi
     *.tmp
-    images/*.eps
-    images/*.dat
-    images/*.gnu
   }
   files = masks.map{ |mask| Dir[mask] }.flatten
   rm files unless files.empty?
