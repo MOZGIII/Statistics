@@ -44,7 +44,11 @@ task :process_files do
   Dir["#{TEX_DIR}/*"].sort.each do |filename|
     if filename =~ /\.erb\z/
       puts "Processing #{filename}"
-      ERBProcessor.process filename, "tmp/#{File.basename(filename).sub(/\.erb\z/, "")}"
+      begin
+        ERBProcessor.process filename, "tmp/#{File.basename(filename).sub(/\.erb\z/, "")}"
+      rescue
+        puts " ...failed"
+      end
     else
       cp filename, "tmp"
     end
