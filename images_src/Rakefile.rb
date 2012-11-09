@@ -128,8 +128,8 @@ end
 task :gnuplot do
   file_names = ["money", "cor2", "cor_norm"]
 
-  Task10.data_graph(DataProvider.data[8]['data'], file_names[0])
-  Task10.data_cor(DataProvider.data[8]['data'], file_names[1], file_names[2])
+  Task10.data_graph(DataProvider.global['task10data'], file_names[0])
+  Task10.data_cor(DataProvider.global['task10data'], file_names[1], file_names[2])
 
   sh "gnuplot *.gnu"
 end

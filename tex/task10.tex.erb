@@ -1,11 +1,9 @@
 <%
-raise "No data found! Read the task and fill in the data! Sooo lazy..." unless data[8]
+raise "No data found! Read the task and fill in the data! Sooo lazy..." unless global['task10data']
 
 sample = {}
 for i in 8 .. 8
-  sample[i] = Statistics::Sample::new(data[i]['data'])
-  sample[i].hist_step = data[i]['histstep'] if data[i]['histstep']
-  sample[i].hist_start  = data[i]['histstart'] if data[i]['histstart']
+  sample[i] = Statistics::Sample::new(global['task10data'])
 end
 %>
 
