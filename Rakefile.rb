@@ -12,6 +12,7 @@ require "latex_helper"
 require "statistics/calc"
 require "statistics/sample"
 require "statistics/distribution"
+#require "core_ext/float" # not using it
 
 TEX_DIR = "tex"
 RESULT = "term_paper.pdf"
