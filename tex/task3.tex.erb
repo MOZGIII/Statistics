@@ -20,7 +20,7 @@ end
 по формуле:
 
 $$  
-  \bar{x} = \frac{1}{n} \sum_{i=1}^n x_i{,}\ \text{где } x_i \text{~--- очередной 
+  \bar{x} = \frac{1}{n} \sum_{i=1}^n x_i{.}\ \text{где } x_i \text{~--- очередной 
   элемент выборки.}
 $$
 
@@ -132,7 +132,7 @@ $$
 
 Выборочные уравнения прямых регрессии $ \zeta $ на $ \xi $ и $ \xi $ на $ \zeta $ имеют вид:
 $$  
-	y = r^{*}_{xy} \frac{S^*_y}{S_x^*}(x - \bar{x}) + \bar{y} \text{  (уравнение прямой регрессии~}  \zeta \text{ на } \xi){,}
+	y = r^{*}_{xy} \frac{S^*_y}{S_x^*}(x - \bar{x}) + \bar{y} \text{  (уравнение прямой регрессии~}  \zeta \text{ на } \xi){.}
 $$
 $$  
 	x= r^{*}_{xy} \frac{S^*_x}{S_y^*}(y - \bar{y}) + \bar{x}  \text{  (уравнение прямой регрессии~} \xi \text{ на } \zeta ){.}
@@ -208,7 +208,7 @@ end.reduce(:+)/sample[1].size
 <% k = r_xy*sample[2].S_star/sample[1].S_star %>
 <% b = sample[2].mean - k*sample[1].mean %>
 $$  
-	y_x = <%=  roundn(k, 4) %> x <%= b < 0 ? "" : "+" %> <%= roundn(b, 4) %> \text{,}
+	y_x = <%=  roundn(k, 4) %> x <%= b < 0 ? "" : "+" %> <%= roundn(b, 4) %> \text{.}
 $$
 <% k = r_xy*sample[1].S_star/sample[2].S_star %>
 <% b = sample[1].mean - k*sample[2].mean %>
