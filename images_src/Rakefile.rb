@@ -91,8 +91,15 @@ MPTASKS = YAML.load_file(IMAGE_LIST_YAML)
 
 task :metapost do
   MPTASKS.each do |mptask|
-    ERBProcessor.process("#{mptask['file']}.mp.erb", "#{mptask['file']}.mp") if File.exists?("#{mptask['file']}.mp.erb")
-  
+    if File.exists?("#{mptask['file']}.mp.erb")
+      puts "Processing #{mptask['file']}.mp.erb"
+      begin
+        ERBProcessor.process("#{mptask['file']}.mp.erb", "#{mptask['file']}.mp")
+      rescue
+        puts " ...failed"
+      end
+    end
+    
     sh "#{MPOST} #{mptask['file']}.mp"
     (1 .. mptask['image_cnt']).each do |i|
       filename = "#{mptask['file']}-#{i}"
