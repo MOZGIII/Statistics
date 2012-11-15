@@ -8,6 +8,7 @@ $: << "." # fix load paths
 require "yaml"
 require "erb_processor"
 require "data_provider"
+require "data_loader"
 require "latex_helper"
 require "statistics/calc"
 require "statistics/sample"
@@ -18,8 +19,7 @@ TEX_DIR = "tex"
 RESULT = "term_paper.pdf"
 
 # Load data
-DataProvider.global = YAML.load_file("data/global.yml")
-DataProvider.data = YAML.load_file("data/#{DataProvider.global["variant"]}.yml")
+DataLoader.load
 
 # Extend sandbox with helpers
 ERBProcessor.add_module DataProvider
