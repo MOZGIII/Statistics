@@ -61,5 +61,11 @@ Session.vim
 *.xdy
 *.tdo
 
+# Vagrant
+/.vagrant
+
 # Current Project
 /term_paper.pdf
+
+# do not allow custom changes to get in the repo
+/data/
