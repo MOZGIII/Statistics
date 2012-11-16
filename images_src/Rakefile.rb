@@ -97,6 +97,7 @@ task :metapost do
         ERBProcessor.process("#{mptask['file']}.mp.erb", "#{mptask['file']}.mp")
       rescue
         puts " ...failed"
+        raise
       end
     end
     
