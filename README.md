@@ -1,6 +1,6 @@
 # Statistics
 
-This thing allows you to automatically generate some PDFs. Who knows what they came from, but some people find them useful.
+This thing allows you to automatically generate some PDFs. Who knows where they came from, but some people find them useful.
 
 ## Installation
 
@@ -15,7 +15,7 @@ $ cd /vagrant
 $ source vm_init.sh
 ```
 
-The `source vm_init.sh` will run a prober script, which can work very long (~5-10 minutes) and fully automated, so you shall go and make a cup of tea.
+The `source vm_init.sh` will run a provision script, which can work very long (~5-10 minutes) and fully automated, so you shall go and make a cup of tea.
 
 ## Usage
 
