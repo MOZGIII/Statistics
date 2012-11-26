@@ -32,46 +32,6 @@ module Statistics
     
     module_function :inv_laplace_function
 
-    def gamma(arg)
-      p = [  1.000000000190015,
-            76.18009172947146,
-          -86.50532032941677,
-            24.01409824083091,
-            -1.231739572450155,
-            1.208650973866179e-3,
-            -5.395239384953e-6 ]
-      sum = p[0] + p[1..-1].inject([0, 1]) do |res, coef|
-        [res.first + coef/(arg + res.last), res.last + 1]
-      end.first
-    
-      Math.sqrt(2*Math::PI)/arg * sum * (arg + 5.5)**(arg + 0.5) * Math.exp(-(arg + 5.5))
-    end
-
-    module_function :gamma
-
-    def chi_square(x, n, steps = nil)
-      unless steps
-        steps = 1 << 12 
-      end
-
-      h = x.to_f/steps
-      
-      xn, yn = 0.0, 0.0
-      constant = 1.0 / (gamma(0.5*n) * 2.0**(0.5*n))
-      power = 0.5*n - 1.0
-      half_step = 0.5*h
-      steps.times do
-        fn = constant * xn**power * Math.exp(-0.5*xn)
-        xn += h
-        fn2 = constant * xn**power * Math.exp(-0.5*xn)
-        yn += half_step*(fn + fn2)
-      end
-
-      return yn
-    end
-
-    module_function :chi_square
-
     def chi_square_critical(a, n)
       ::Distribution::ChiSquare.pchi2(n, a)
     end
