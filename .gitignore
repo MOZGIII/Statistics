@@ -64,6 +64,9 @@ Session.vim
 # Vagrant
 /.vagrant
 
+# Bundler
+Gemfile.lock
+
 # Current Project
 /term_paper.pdf
 
