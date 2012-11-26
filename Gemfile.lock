@@ -1,0 +1,10 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    distribution (0.7.0)
+
+PLATFORMS
+  x86-mingw32
+
+DEPENDENCIES
+  distribution

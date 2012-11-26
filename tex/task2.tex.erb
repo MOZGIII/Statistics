@@ -146,7 +146,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
 %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::chi_square_critical(0.1, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{.}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 2 - 1 = <%= hist.size - 3 %> $, 
@@ -198,7 +198,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::chi_square_critical(0.1, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{.}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 3 - 1 = <%= hist.size - 3 %> $, 
@@ -249,7 +249,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 2), 4) %>
+<% chi_critic = roundn(Statistics::Calc::chi_square_critical(0.1, hist.size - 2), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{.}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 1 - 1 = <%= hist.size - 2 %> $, 
@@ -304,7 +304,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::chi_square_critical(0.1, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{.}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 2 - 1 = <%= hist.size - 3 %> $, 
@@ -355,7 +355,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 3), 4) %>
+<% chi_critic = roundn(Statistics::Calc::chi_square_critical(0.1, hist.size - 3), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{.}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 2 - 1 = <%= hist.size - 3 %> $, 
@@ -403,7 +403,7 @@ Cоставим таблицу эмпирических и теоритичес�
    end
  %>
 <% chi = roundn(chi, 4) %>
-<% chi_critic = roundn(Statistics::Calc::inv_chi_square(0.9, hist.size - 2), 4) %>
+<% chi_critic = roundn(Statistics::Calc::chi_square_critical(0.1, hist.size - 2), 4) %>
 
 Находим $ \chi_{\text{набл}}^2 = <%= chi %> $. Уровень значимости $ \alpha = 0{.}1 $, 
 степень свободы $ s - r - 1 = <%= hist.size %> - 1 - 1 = <%= hist.size - 2 %> $, 

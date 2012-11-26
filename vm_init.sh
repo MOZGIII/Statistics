@@ -27,5 +27,7 @@ command rvm install ruby
 rvm use --default ruby
 
 # Install Rake
-gem install rake
+gem install rake bundler
 
+# Install dependencies
+bundle install

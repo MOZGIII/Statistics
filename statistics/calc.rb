@@ -1,3 +1,5 @@
+require "distribution" # Load distribution gem
+
 module Statistics
   module Calc
     def laplace_function(x)
@@ -70,28 +72,11 @@ module Statistics
 
     module_function :chi_square
 
-    def inv_chi_square(y, n, steps = nil)
-      unless steps
-        steps = 1 << 16
-      end
-
-      h = (y.to_f - chi_square(n, n))/steps
-      
-      xn, tn = n.to_f, 0.0
-      constant = gamma(0.5*n) * 2.0**(0.5*n)
-      power = 1.0 - 0.5*n
-      half_step = 0.5*h
-      steps.times do
-        fn = constant * xn**power * Math.exp(0.5*xn)
-        tn = xn + h*fn
-        fn2 = constant * tn**power * Math.exp(0.5*tn)
-        xn += half_step*(fn + fn2)    
-      end
-
-      return xn
+    def chi_square_critical(a, n)
+      ::Distribution::ChiSquare.pchi2(n, a)
     end
     
-    module_function :inv_chi_square
+    module_function :chi_square_critical
 
     def minimal_square_method(points)
       x_med = points.map{ |e| e.first }.reduce(:+).to_f / points.size
