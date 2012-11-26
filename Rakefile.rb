@@ -47,8 +47,10 @@ task :process_files do
       puts "Processing #{filename}"
       begin
         ERBProcessor.process filename, "tmp/#{File.basename(filename).sub(/\.erb\z/, "")}"
-      rescue
+      rescue Exception => e
         puts " ...failed"
+        puts e.inspect
+        puts e.backtrace
       end
     else
       cp filename, "tmp"
